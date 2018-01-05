@@ -22,7 +22,58 @@ public class Base64FloatSupport {
 	private Base64FloatSupport() {
 	}
 
+	/**
+	 * DODICI
+	 */
+	final static int DODICI = 12;
+	/**
+	 * UNDICI
+	 */
+	final static int UNDICI = 11;
+	/**
+	 * DIECI
+	 */
+	final static int DIECI = 10;
+	/**
+	 * NOVE
+	 */
+	final static int NOVE = 9;
+	/**
+	 * OTTO
+	 */
 	final static int OTTO = 8;
+	/**
+	 * SETTE
+	 */
+	final static int SETTE = 7;
+	/**
+	 * SEI
+	 */
+	final static int SEI = 6;
+	/**
+	 * CINQUE
+	 */
+	final static int CINQUE = 5;
+	/**
+	 * QUATTRO
+	 */
+	final static int QUATTRO = 4;
+	/**
+	 * TRE
+	 */
+	final static int TRE = 3;
+	/**
+	 * DUE
+	 */
+	final static int DUE = 2;
+	/**
+	 * UNO
+	 */
+	final static int UNO = 1;
+	/**
+	 * ZERO
+	 */
+	final static int ZERO = 0;
 
 	/**
 	 * static int[] DIGITS
@@ -117,20 +168,24 @@ public class Base64FloatSupport {
 
 			@Override
 			public Any wrap(Object obj) {
+				Any f = null;
 				try {
 					if (obj instanceof Float) {
-						return Any.wrap(((Float) obj).floatValue());
+						f = Any.wrap(((Float) obj).floatValue());
 					}
 				} catch (Exception e) {
 					System.out.print("Error: Exception.");
 				} finally {
 					System.out.print("");
 				}
-				return null;
+				return f;
 			}
 		});
 	}
 
+	/**
+	 * enableEncodersAndDecoders
+	 */
 	public static void enableEncodersAndDecoders() {
 		boolean enabled = false;
 		synchronized (Base64FloatSupport.class) {
@@ -158,13 +213,14 @@ public class Base64FloatSupport {
 			public Object decode(JsonIterator iter) throws IOException {
 				byte token = CodegenAccess.nextToken(iter);
 				CodegenAccess.unreadByte(iter);
+				Double d = null;
 				if (token == '"') {
-					Double d = Double.longBitsToDouble(Base64.decodeLongBits(iter));
-					return d.floatValue();
+					d = Double.longBitsToDouble(Base64.decodeLongBits(iter));
 				} else {
-					Double d = iter.readDouble();
-					return d.floatValue();
+					d = iter.readDouble();
+
 				}
+				return d.floatValue();
 			}
 		});
 		JsoniterSpi.registerTypeDecoder(float.class, new Decoder.FloatDecoder() {
@@ -172,13 +228,13 @@ public class Base64FloatSupport {
 			public float decodeFloat(JsonIterator iter) throws IOException {
 				byte token = CodegenAccess.nextToken(iter);
 				CodegenAccess.unreadByte(iter);
+				Double d = null;
 				if (token == '"') {
-					Double d = Double.longBitsToDouble(Base64.decodeLongBits(iter));
-					return d.floatValue();
+					d = Double.longBitsToDouble(Base64.decodeLongBits(iter));
 				} else {
-					Double d = iter.readDouble();
-					return d.floatValue();
+					d = iter.readDouble();
 				}
+				return d.floatValue();
 			}
 		});
 	}
@@ -187,25 +243,29 @@ public class Base64FloatSupport {
 		JsoniterSpi.registerTypeDecoder(Double.class, new Decoder() {
 			@Override
 			public Object decode(JsonIterator iter) throws IOException {
+				Double doub = null;
 				byte token = CodegenAccess.nextToken(iter);
 				CodegenAccess.unreadByte(iter);
 				if (token == '"') {
-					return Double.longBitsToDouble(Base64.decodeLongBits(iter));
+					doub = Double.longBitsToDouble(Base64.decodeLongBits(iter));
 				} else {
-					return iter.readDouble();
+					doub = iter.readDouble();
 				}
+				return doub;
 			}
 		});
 		JsoniterSpi.registerTypeDecoder(double.class, new Decoder.DoubleDecoder() {
 			@Override
 			public double decodeDouble(JsonIterator iter) throws IOException {
+				Double doub = null;
 				byte token = CodegenAccess.nextToken(iter);
 				CodegenAccess.unreadByte(iter);
 				if (token == '"') {
-					return Double.longBitsToDouble(Base64.decodeLongBits(iter));
+					doub = Double.longBitsToDouble(Base64.decodeLongBits(iter));
 				} else {
-					return iter.readDouble();
+					doub = iter.readDouble();
 				}
+				return doub;
 			}
 		});
 		enableDecoders1();
@@ -216,7 +276,7 @@ public class Base64FloatSupport {
 		byte[] data = slice.data();
 		long val = 0;
 		int tail = slice.tail();
-		int n = 4;
+		int n = QUATTRO;
 		for (int i = slice.head(); i < tail; i++) {
 			byte b = data[i];
 			val = SupportBitwise.bitwise(val << n, Long.valueOf(Integer.toString(DEC[b])).longValue(), '|');
@@ -228,28 +288,28 @@ public class Base64FloatSupport {
 			throws IOException {
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
-		byte b14 = intero.toString().getBytes()[0];
+		byte b14 = intero.toString().getBytes()[ZERO];
 		byte b13 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b13);
 		arrayByte.add(b14);
 		long bit = bits >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b14, b13, arrayByte.get(12), arrayByte.get(11), arrayByte.get(10));
-			stream.write(arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6), arrayByte.get(5),
-					arrayByte.get(4));
-			stream.write(arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b14, b13, arrayByte.get(12), arrayByte.get(UNDICI), arrayByte.get(DIECI));
+			stream.write(arrayByte.get(NOVE), arrayByte.get(OTTO), arrayByte.get(SETTE), arrayByte.get(SEI),
+					arrayByte.get(CINQUE), arrayByte.get(4));
+			stream.write(arrayByte.get(TRE), arrayByte.get(DUE), arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> OTTO;
-		byte b16 = intero.toString().getBytes()[0];
+		byte b16 = intero.toString().getBytes()[ZERO];
 		byte b15 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b15);
 		arrayByte.add(b16);
-		stream.write(arrayByte.get(0), b16, b15, b14, b13, arrayByte.get(12));
-		stream.write(arrayByte.get(11), arrayByte.get(10), arrayByte.get(9), arrayByte.get(8), arrayByte.get(7),
-				arrayByte.get(6));
-		stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1),
-				arrayByte.get(0));
+		stream.write(arrayByte.get(ZERO), b16, b15, b14, b13, arrayByte.get(DODICI));
+		stream.write(arrayByte.get(UNDICI), arrayByte.get(DIECI), arrayByte.get(NOVE), arrayByte.get(OTTO),
+				arrayByte.get(SETTE), arrayByte.get(SEI));
+		stream.write(arrayByte.get(CINQUE), arrayByte.get(QUATTRO), arrayByte.get(TRE), arrayByte.get(DUE),
+				arrayByte.get(UNO), arrayByte.get(ZERO));
 
 		return stream;
 	}
@@ -259,15 +319,15 @@ public class Base64FloatSupport {
 
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
-		byte b10 = intero.toString().getBytes()[0];
+		byte b10 = intero.toString().getBytes()[ZERO];
 		byte b9 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b9);
 		arrayByte.add(b10);
 		long bit = bits >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b10, b9, arrayByte.get(8), arrayByte.get(7), arrayByte.get(6));
-			stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1),
-					arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b10, b9, arrayByte.get(OTTO), arrayByte.get(SETTE), arrayByte.get(SEI));
+			stream.write(arrayByte.get(CINQUE), arrayByte.get(QUATTRO), arrayByte.get(TRE), arrayByte.get(DUE),
+					arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> OTTO;
@@ -277,10 +337,10 @@ public class Base64FloatSupport {
 		arrayByte.add(b12);
 		bit = bit >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b12, b11, b10, b9, arrayByte.get(8));
-			stream.write(arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4), arrayByte.get(3),
-					arrayByte.get(2));
-			stream.write(arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b12, b11, b10, b9, arrayByte.get(OTTO));
+			stream.write(arrayByte.get(SETTE), arrayByte.get(SEI), arrayByte.get(CINQUE), arrayByte.get(QUATTRO),
+					arrayByte.get(TRE), arrayByte.get(DUE));
+			stream.write(arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		JsonStream strea = writeStream4(bit, stream, arrayByte, longdigit);
 		return strea;
@@ -292,25 +352,25 @@ public class Base64FloatSupport {
 
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
-		byte b6 = intero.toString().getBytes()[0];
+		byte b6 = intero.toString().getBytes()[ZERO];
 		byte b5 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b5);
 		arrayByte.add(b6);
 		long bit = bits >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b6, b5, arrayByte.get(4), arrayByte.get(3));
-			stream.write(arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b6, b5, arrayByte.get(QUATTRO), arrayByte.get(TRE));
+			stream.write(arrayByte.get(DUE), arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> OTTO;
-		byte b8 = intero.toString().getBytes()[0];
+		byte b8 = intero.toString().getBytes()[ZERO];
 		byte b7 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b7);
 		arrayByte.add(b8);
 		bit = bit >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b8, b7, b6, b5, arrayByte.get(4));
-			stream.write(arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b8, b7, b6, b5, arrayByte.get(QUATTRO));
+			stream.write(arrayByte.get(TRE), arrayByte.get(DUE), arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		JsonStream strea = writeStream3(bit, stream, arrayByte, longdigit);
 		return strea;
@@ -321,7 +381,7 @@ public class Base64FloatSupport {
 
 		long bit = bits >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), arrayByte.get(1), arrayByte.get(2), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), arrayByte.get(UNO), arrayByte.get(DUE), arrayByte.get(ZERO));
 		}
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
@@ -331,7 +391,7 @@ public class Base64FloatSupport {
 		arrayByte.add(b3);
 		bit = bit >> OTTO;
 		if (bit == 0) {
-			stream.write(arrayByte.get(0), b4, b3, arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(ZERO), b4, b3, arrayByte.get(DUE), arrayByte.get(UNO), arrayByte.get(ZERO));
 		}
 		JsonStream strea = writeStream2(bit, stream, arrayByte, longdigit);
 		return strea;
