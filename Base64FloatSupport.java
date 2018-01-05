@@ -125,6 +125,7 @@ public class Base64FloatSupport {
 
 	/**
 	 * enableEncodersAndDecoders.
+	 * @throws IOException
 	 */
 	private static void enableSupp1() {
 		JsoniterSpi.registerTypeEncoder(Double.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
@@ -158,7 +159,7 @@ public class Base64FloatSupport {
 
 	/**
 	 * enableSupp2
-	 * @IOException
+	 * @throws IOException
 	 */
 	private static void enableSupp2() {
 		JsoniterSpi.registerTypeEncoder(Float.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
@@ -191,7 +192,8 @@ public class Base64FloatSupport {
 
 	/**
 	 * enableEncodersAndDecoders
-	 * @JsonException
+	 * @throws JsonException
+	 * @throws IOException
 	 */
 	public static void enableEncodersAndDecoders() {
 		boolean enabled = false;
@@ -216,7 +218,7 @@ public class Base64FloatSupport {
 
 	/**
 	 * enableDecoders1
-	 * @IOException
+	 * @throws IOException
 	 */
 	public static void enableDecoders1() {
 		JsoniterSpi.registerTypeDecoder(Float.class, new Decoder() {
@@ -252,7 +254,7 @@ public class Base64FloatSupport {
 
 	/**
 	 * enableDecoders
-	 * @IOException
+	 * @see com.jsoniter.spi.Decoder#decode(com.jsoniter.JsonIterator)
 	 */
 	public static void enableDecoders() {
 		JsoniterSpi.registerTypeDecoder(Double.class, new Decoder() {
