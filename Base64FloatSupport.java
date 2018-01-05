@@ -1,6 +1,7 @@
 package com.jsoniter.extra;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.jsoniter.CodegenAccess;
 import com.jsoniter.JsonIterator;
@@ -193,7 +194,7 @@ public class Base64FloatSupport {
 		});
 	}
 
-	 static long readLongBits(JsonIterator iter) throws IOException {
+	static long readLongBits(JsonIterator iter) throws IOException {
 		Slice slice = iter.readStringAsSlice();
 		byte[] data = slice.data();
 		long val = 0;
@@ -205,8 +206,117 @@ public class Base64FloatSupport {
 		}
 		return val;
 	}
+	
+	static JsonStream writeStream4(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
+			Long longdigit) throws IOException {
+		int i=0;
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b14 = intero.toString().getBytes()[0];
+		byte b13 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b13);
+		arrayByte.add(b14);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b14, b13, arrayByte.get(i+12), arrayByte.get(i+11), arrayByte.get(i+10));
+			stream.write(arrayByte.get(i+9), arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6), arrayByte.get(i+5), arrayByte.get(i+4));
+			stream.write(arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		}
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b16 = intero.toString().getBytes()[0];
+		byte b15 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b15);
+		arrayByte.add(b16);
+		stream.write(arrayByte.get(i), b16, b15, b14, b13, arrayByte.get(i+12));
+		stream.write(arrayByte.get(i+11), arrayByte.get(i+10), arrayByte.get(i+9), arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6));
+		stream.write(arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		
+		return stream;
+	}
+	
+	static JsonStream writeStream3(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
+			Long longdigit) throws IOException {
+		int i=0;
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b10 = intero.toString().getBytes()[0];
+		byte b9 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b9);
+		arrayByte.add(b10);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b10, b9, arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6));
+			stream.write(arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		}
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b12 = intero.toString().getBytes()[0];
+		byte b11 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b11);
+		arrayByte.add(b12);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b12, b11, b10, b9, arrayByte.get(i+8));
+			stream.write(arrayByte.get(i+7), arrayByte.get(i+6), arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2));
+			stream.write(arrayByte.get(i+1), arrayByte.get(i));
+		}
+		stream = writeStream4(bits, stream, arrayByte, intero, digit, longdigit);
+		return stream;
+		
+	}
 
-	 static void writeLongBits(long bits, JsonStream stream) throws IOException {
+	static JsonStream writeStream2(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
+			Long longdigit) throws IOException {
+		int i=0;
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b6 = intero.toString().getBytes()[0];
+		byte b5 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b5);
+		arrayByte.add(b6);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b6, b5, arrayByte.get(i+4), arrayByte.get(i+3));
+			stream.write(arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		}
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b8 = intero.toString().getBytes()[0];
+		byte b7 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b7);
+		arrayByte.add(b8);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b8, b7, b6, b5, arrayByte.get(i+4));
+			stream.write(arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		}
+		stream = writeStream3(bits, stream, arrayByte, intero, digit, longdigit);
+		return stream;
+	}
+
+	static JsonStream writeStream1(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
+			Long longdigit) throws IOException {
+		int i = 0;
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), arrayByte.get(i + 1), arrayByte.get(i + 2), arrayByte.get(i));
+		}
+		digit = DIGITS[longdigit.intValue()];
+		intero = digit >> 8;
+		byte b4 = intero.toString().getBytes()[0];
+		byte b3 = Integer.valueOf(digit).byteValue();
+		arrayByte.add(b3);
+		arrayByte.add(b3);
+		bits = bits >> 8;
+		if (bits == 0) {
+			stream.write(arrayByte.get(i), b4, b3, arrayByte.get(i + 2), arrayByte.get(i + 1), arrayByte.get(i));
+		}
+		stream = writeStream2(bits, stream, arrayByte, intero, digit, longdigit);
+		return stream;
+	}
+
+	static void writeLongBits(long bits, JsonStream stream) throws IOException {
 		Character c = '"';
 		byte ch = c.toString().getBytes()[0];
 		Integer intero = null;
@@ -214,73 +324,13 @@ public class Base64FloatSupport {
 		Long longdigit = SupportBitwise.bitwise(bits, ff, '&');
 		int digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
+
+		ArrayList<Byte> arrayByte = new ArrayList<Byte>();
 		byte b2 = intero.toString().getBytes()[0];
 		byte b1 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b4 = intero.toString().getBytes()[0];
-		byte b3 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b4, b3, b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b6 = intero.toString().getBytes()[0];
-		byte b5 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b6, b5, b4, b3);
-			stream.write(b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b8 = intero.toString().getBytes()[0];
-		byte b7 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b8, b7, b6, b5, b4);
-			stream.write(b3, b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b10 = intero.toString().getBytes()[0];
-		byte b9 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b10, b9, b8, b7, b6);
-			stream.write(b5, b4, b3, b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b12 = intero.toString().getBytes()[0];
-		byte b11 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b12, b11, b10, b9, b8);
-			stream.write(b7, b6, b5, b4, b3, b2);
-			stream.write(b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b14 = intero.toString().getBytes()[0];
-		byte b13 = Integer.valueOf(digit).byteValue();
-		bits = bits >> 8;
-		if (bits == 0) {
-			stream.write(ch, b14, b13, b12, b11, b10);
-			stream.write(b9, b8, b7, b6, b5, b4);
-			stream.write(b3, b2, b1, ch);
-		}
-		digit = DIGITS[longdigit.intValue()];
-		intero = digit >> 8;
-		byte b16 = intero.toString().getBytes()[0];
-		byte b15 = Integer.valueOf(digit).byteValue();
-		stream.write(ch, b16, b15, b14, b13, b12);
-		stream.write(b11, b10, b9, b8, b7, b6);
-		stream.write(b5, b4, b3, b2, b1, ch);
+		arrayByte.add(ch);
+		arrayByte.add(b1);
+		arrayByte.add(b2);
+		stream = writeStream1(bits, stream, arrayByte, intero, digit, longdigit);
 	}
 }
