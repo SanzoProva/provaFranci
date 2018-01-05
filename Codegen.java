@@ -121,10 +121,11 @@ class Codegen {
 			Decoder decoder = JsoniterSpi.getDecoder(cacheKey);
 			decoder = genNull(decoder);
 			List<Extension> extensions = JsoniterSpi.getExtensions();
+			Type tip = null;
 			for (Extension extension : extensions) {
-				type = extension.chooseImplementation(type);
+				tip = extension.chooseImplementation(type);
 			}
-			Type typ = chooseImpl(type);
+			Type typ = chooseImpl(tip);
 			for (Extension extension : extensions) {
 				decoder = extension.createDecoder(cacheKey, typ);
 				if (decoder != null) {
@@ -245,24 +246,25 @@ class Codegen {
 	private static Type chooseImpl(Type type) {
 		Type[] typeArgs = new Type[0];
 		Class clazz = null;
+		Type typ = null;
 		if (type instanceof ParameterizedType) {
 			ParameterizedType pType = (ParameterizedType) type;
-			if (type instanceof ParameterizedType) {
+			if ((type instanceof ParameterizedType) && (pType.getRawType() instanceof Class)) {
 				clazz = (Class) pType.getRawType();
 				typeArgs = pType.getActualTypeArguments();
+				typ = type;
 			}
 		} else if (type instanceof WildcardType) {
-			type = Object.class;
+			typ = Object.class;
 		} else {
 			if (type instanceof Class) {
 				clazz = (Class) type;
+				typ = type;
 			}
 		}
 		Class implClazz = JsoniterSpi.getTypeImplementation(clazz);
-
-		type = chooseImplSupp(typeArgs, clazz, implClazz);
-
-		return type;
+		typ = chooseImplSupp(typeArgs, clazz, implClazz);
+		return typ;
 	}
 
 	
