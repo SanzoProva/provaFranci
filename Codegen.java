@@ -64,12 +64,13 @@ class Codegen {
 	}
 
 	private static Decoder genSupport(Decoder decoder, String cacheKey, DecodingMode mode) {
+		Decoder dec = decoder;
 		if (isDoingStaticCodegen.outputDir == "") {
 			try {
 				if (Class.forName(cacheKey).newInstance() instanceof Decoder) {
-					decoder = (Decoder) Class.forName(cacheKey).newInstance();
+					dec = (Decoder) Class.forName(cacheKey).newInstance();
 				}
-				return decoder;
+				return dec;
 			} catch (Exception e) {
 				if (mode == DecodingMode.STATIC_MODE) {
 					throw new JsonException(
@@ -78,18 +79,19 @@ class Codegen {
 			}
 		}
 
-		return decoder;
+		return dec;
 	}
 
 	private static Decoder genSupport(Decoder decoder, String cacheKey, String source, ClassInfo classInfo) {
+		Decoder dec = decoder;
 		try {
 			generatedClassNames.add(cacheKey);
 			if (isDoingStaticCodegen.outputDir == "") {
-				decoder = DynamicCodegen.gen(cacheKey, source);
+				dec = DynamicCodegen.gen(cacheKey, source);
 			} else {
 				staticGen(cacheKey, source);
 			}
-			return decoder;
+			return dec;
 		} catch (Exception e) {
 			String msg = "failed to generate decoder for: " + classInfo + " with " + Arrays.toString(classInfo.typeArgs)
 					+ ", exception: " + e;
@@ -102,10 +104,10 @@ class Codegen {
 		try {
 			Config currentConfig = JsoniterSpi.getCurrentConfig();
 			DecodingMode mode = currentConfig.decodingMode();
-			decoder = genSupport(decoder, classInfo, mode);
-			decoder = genSupport(decoder, cacheKey, mode);
+			Decoder deco = genSupport(decoder, classInfo, mode);
+			Decoder dec = genSupport(deco, cacheKey, mode);
 			String source = genSupport(cacheKey, mode, classInfo);
-			return decoder = genSupport(decoder, cacheKey, source, classInfo);
+			return genSupport(dec, cacheKey, source, classInfo);
 		} finally {
 			JsoniterSpi.addNewDecoder(cacheKey, decoder);
 		}
