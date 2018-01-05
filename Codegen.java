@@ -178,6 +178,20 @@ class Codegen {
 	public static boolean canStaticAccess(String cacheKey) {
 		return generatedClassNames.contains(cacheKey);
 	}
+	
+	private static Type chooseImplSupp2(Type[] typeArgs, Class implClazz) {
+		Type type = null;
+		if (implClazz != null) {
+			if (typeArgs.length == 0) {
+				type = implClazz;
+			} else {
+				type = GenericsHelper.createParameterizedType(typeArgs, null, implClazz);
+			}
+		}
+
+		return type;
+
+	}
 
 	private static Type chooseImplSupp1(Type[] typeArgs, Class clazz, Class implClazz) {
 		Type t = null;
@@ -201,6 +215,7 @@ class Codegen {
 			DefaultMapKeyDecoder.registerOrGetExisting(keyType);
 			t = GenericsHelper.createParameterizedType(new Type[] { keyType, valueType }, null, clazz);
 		}
+		t = chooseImplSupp2(typeArgs, implClazz);
 		return t;
 	}
 
@@ -222,7 +237,8 @@ class Codegen {
 			}
 			t = GenericsHelper.createParameterizedType(new Type[] { compType }, null, clazz);
 		}
-
+		
+		t = chooseImplSupp1(typeArgs, clazz, implClazz);
 		return t;
 	}
 
@@ -245,25 +261,11 @@ class Codegen {
 		Class implClazz = JsoniterSpi.getTypeImplementation(clazz);
 
 		type = chooseImplSupp(typeArgs, clazz, implClazz);
-		type = chooseImplSupp1(typeArgs, clazz, implClazz);
-		type = chooseImplSupp2(typeArgs, implClazz);
 
 		return type;
 	}
 
-	private static Type chooseImplSupp2(Type[] typeArgs, Class implClazz) {
-		Type type = null;
-		if (implClazz != null) {
-			if (typeArgs.length == 0) {
-				type = implClazz;
-			} else {
-				type = GenericsHelper.createParameterizedType(typeArgs, null, implClazz);
-			}
-		}
-
-		return type;
-
-	}
+	
 
 	private static void staticGen(String cacheKey, String source) throws IOException {
 		createDir(cacheKey);
