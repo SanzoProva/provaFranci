@@ -164,6 +164,8 @@ class Codegen {
 			}
 		});
 	}
+	
+	
 
 	/**
 	 * canStaticAccess
@@ -173,52 +175,6 @@ class Codegen {
 	 */
 	public static boolean canStaticAccess(String cacheKey) {
 		return generatedClassNames.contains(cacheKey);
-	}
-	
-	private static Type chooseImplSupp1 (Class implClazz, Class clazz, Type[] typeArgs) {		
-		if (Map.class.isAssignableFrom(clazz)) {
-			Type keyType = String.class;
-			Type valueType = Object.class;
-			if (typeArgs.length == 2) {
-				keyType = typeArgs[0];
-				valueType = typeArgs[1];
-			} else {
-				throw new IllegalArgumentException("can not bind to generic collection without argument types, "
-						+ "try syntax like TypeLiteral<Map<String, String>>{}");
-			}
-			if (clazz == Map.class) {
-				clazz = implClazz == null ? HashMap.class : implClazz;
-			}
-			if (keyType == Object.class) {
-				keyType = String.class;
-			}
-			DefaultMapKeyDecoder.registerOrGetExisting(keyType);
-			return GenericsHelper.createParameterizedType(new Type[] { keyType, valueType }, null, clazz);
-		} else 
-			return null;
-	}
-	
-	private static Type chooseImplSupp (Class implClazz, Class clazz, Type[] typeArgs){
-		
-		if (Collection.class.isAssignableFrom(clazz)) {
-			Type compType = Object.class;
-			if (typeArgs.length == 1) {
-				compType = typeArgs[0];
-			} else {
-				throw new IllegalArgumentException("can not bind to generic collection without argument types, "
-						+ "try syntax like TypeLiteral<List<Integer>>{}");
-			}
-			if (clazz == List.class) {
-				clazz = implClazz == null ? ArrayList.class : implClazz;
-			} else if (clazz == Set.class) {
-				clazz = implClazz == null ? HashSet.class : implClazz;
-			}
-			return GenericsHelper.createParameterizedType(new Type[] { compType }, null, clazz);
-		} else 
-			return null;
-		
-		
-		
 	}
 
 	private static Type chooseImpl(Type type) {
@@ -238,9 +194,6 @@ class Codegen {
 			}
 		} 
 		Class implClazz = JsoniterSpi.getTypeImplementation(clazz);
-		type  =  chooseImplSupp (implClazz, clazz, typeArgs);
-		type = chooseImplSupp1 (implClazz, clazz, typeArgs);
-		/*Class implClazz = JsoniterSpi.getTypeImplementation(clazz);
 		if (Collection.class.isAssignableFrom(clazz)) {
 			Type compType = Object.class;
 			if (typeArgs.length == 1) {
@@ -274,7 +227,7 @@ class Codegen {
 			}
 			DefaultMapKeyDecoder.registerOrGetExisting(keyType);
 			return GenericsHelper.createParameterizedType(new Type[] { keyType, valueType }, null, clazz);
-		}*/
+		}
 		if (implClazz != null) {
 			if (typeArgs.length == 0) {
 				return implClazz;
@@ -354,17 +307,20 @@ class Codegen {
 		List<Binding> allBindings = desc.allDecoderBindings();
 		for (Binding binding : allBindings) {
 			if (binding.asMissingWhenNotPresent || binding.asExtraWhenPresent || binding.shouldSkip) {
-				// only slice support mandatory tracking
 				return true;
 			}
 		}
 		if (desc.asExtraForUnknownProperties) {
-			// only slice support unknown field tracking
 			return true;
 		}
 		if (!desc.keyValueTypeWrappers.isEmpty()) {
 			return true;
 		}
+		
+		return shouldUseStrictModeSupp(allBindings);
+	}
+	
+	private static boolean shouldUseStrictModeSupp(List<Binding> allBindings){
 		boolean hasBinding = false;
 		for (Binding allBinding : allBindings) {
 			if (allBinding.fromNames.length > 0) {
@@ -372,10 +328,9 @@ class Codegen {
 			}
 		}
 		if (!hasBinding) {
-			// empty object can only be handled by strict mode
 			return true;
 		}
-		return false;
+		return hasBinding;
 	}
 
 	public static void staticGenDecoders(TypeLiteral[] typeLiterals,
