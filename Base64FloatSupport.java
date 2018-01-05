@@ -23,7 +23,7 @@ public class Base64FloatSupport {
 	}
 
 	final static int OTTO = 8;
-	
+
 	/**
 	 * static int[] DIGITS
 	 */
@@ -72,6 +72,65 @@ public class Base64FloatSupport {
 	/**
 	 * enableEncodersAndDecoders.
 	 */
+
+	private static void enableSupp1() {
+		JsoniterSpi.registerTypeEncoder(Double.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
+			@Override
+			public void encode(Object obj, JsonStream stream) throws IOException {
+				Double number = null;
+				if (obj instanceof Double) {
+					number = (Double) obj;
+				}
+				long bits = Double.doubleToRawLongBits(number.doubleValue());
+				Base64.encodeLongBits(bits, stream);
+			}
+
+			@Override
+			public Any wrap(Object obj) {
+				Double number = null;
+				if (obj instanceof Double) {
+					number = (Double) obj;
+				}
+				return Any.wrap(number.doubleValue());
+			}
+		});
+		JsoniterSpi.registerTypeEncoder(double.class, new com.jsoniter.spi.Encoder.DoubleEncoder() {
+			@Override
+			public void encodeDouble(double obj, JsonStream stream) throws IOException {
+				long bits = Double.doubleToRawLongBits(obj);
+				Base64.encodeLongBits(bits, stream);
+			}
+		});
+	}
+
+	private static void enableSupp2() {
+		JsoniterSpi.registerTypeEncoder(Float.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
+			@Override
+			public void encode(Object obj, JsonStream stream) throws IOException {
+				Float number = null;
+				if (obj instanceof Float) {
+					number = (Float) obj;
+				}
+				long bits = Double.doubleToRawLongBits(number.doubleValue());
+				Base64.encodeLongBits(bits, stream);
+			}
+
+			@Override
+			public Any wrap(Object obj) {
+				try {
+					if (obj instanceof Float) {
+						return Any.wrap(((Float) obj).floatValue());
+					}
+				} catch (Exception e) {
+					System.out.print("Error: Exception.");
+				} finally {
+					System.out.print("");
+				}
+				return null;
+			}
+		});
+	}
+
 	public static void enableEncodersAndDecoders() {
 		boolean enabled = false;
 		synchronized (Base64FloatSupport.class) {
@@ -80,58 +139,9 @@ public class Base64FloatSupport {
 			}
 			enabled = true;
 			enableDecoders();
-			JsoniterSpi.registerTypeEncoder(Double.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
-				@Override
-				public void encode(Object obj, JsonStream stream) throws IOException {
-					Double number = null;
-					if (obj instanceof Double) {
-						number = (Double) obj;
-					}
-					long bits = Double.doubleToRawLongBits(number.doubleValue());
-					Base64.encodeLongBits(bits, stream);
-				}
+			enableSupp1();
+			enableSupp2();
 
-				@Override
-				public Any wrap(Object obj) {
-					Double number = null;
-					if (obj instanceof Double) {
-						number = (Double) obj;
-					}
-					return Any.wrap(number.doubleValue());
-				}
-			});
-			JsoniterSpi.registerTypeEncoder(double.class, new com.jsoniter.spi.Encoder.DoubleEncoder() {
-				@Override
-				public void encodeDouble(double obj, JsonStream stream) throws IOException {
-					long bits = Double.doubleToRawLongBits(obj);
-					Base64.encodeLongBits(bits, stream);
-				}
-			});
-			JsoniterSpi.registerTypeEncoder(Float.class, new com.jsoniter.spi.Encoder.ReflectionEncoder() {
-				@Override
-				public void encode(Object obj, JsonStream stream) throws IOException {
-					Float number = null;
-					if (obj instanceof Float) {
-						number = (Float) obj;
-					}
-					long bits = Double.doubleToRawLongBits(number.doubleValue());
-					Base64.encodeLongBits(bits, stream);
-				}
-
-				@Override
-				public Any wrap(Object obj) {
-					try {
-						if (obj instanceof Float) {
-							return Any.wrap(((Float) obj).floatValue());
-						}
-					} catch (Exception e) {
-						System.out.print("Error: Exception.");
-					} finally {
-						System.out.print("");
-					}
-					return null;
-				}
-			});
 			JsoniterSpi.registerTypeEncoder(float.class, new com.jsoniter.spi.Encoder.FloatEncoder() {
 				@Override
 				public void encodeFloat(float obj, JsonStream stream) throws IOException {
@@ -141,8 +151,8 @@ public class Base64FloatSupport {
 			});
 		}
 	}
-	
-	public static void enableDecoders1(){
+
+	public static void enableDecoders1() {
 		JsoniterSpi.registerTypeDecoder(Float.class, new Decoder() {
 			@Override
 			public Object decode(JsonIterator iter) throws IOException {
@@ -213,9 +223,9 @@ public class Base64FloatSupport {
 		}
 		return val;
 	}
-	
-	static JsonStream writeStream4(long bits, JsonStream stream, List<Byte> arrayByte, 
-			Long longdigit) throws IOException {
+
+	static JsonStream writeStream4(long bits, JsonStream stream, List<Byte> arrayByte, Long longdigit)
+			throws IOException {
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
 		byte b14 = intero.toString().getBytes()[0];
@@ -225,7 +235,8 @@ public class Base64FloatSupport {
 		long bit = bits >> OTTO;
 		if (bit == 0) {
 			stream.write(arrayByte.get(0), b14, b13, arrayByte.get(12), arrayByte.get(11), arrayByte.get(10));
-			stream.write(arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4));
+			stream.write(arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6), arrayByte.get(5),
+					arrayByte.get(4));
 			stream.write(arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
@@ -235,15 +246,17 @@ public class Base64FloatSupport {
 		arrayByte.add(b15);
 		arrayByte.add(b16);
 		stream.write(arrayByte.get(0), b16, b15, b14, b13, arrayByte.get(12));
-		stream.write(arrayByte.get(11), arrayByte.get(10), arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6));
-		stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
-		
+		stream.write(arrayByte.get(11), arrayByte.get(10), arrayByte.get(9), arrayByte.get(8), arrayByte.get(7),
+				arrayByte.get(6));
+		stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1),
+				arrayByte.get(0));
+
 		return stream;
 	}
-	
-	static JsonStream writeStream3(long bits, JsonStream stream, List<Byte> arrayByte, 
-			Long longdigit) throws IOException {
-		
+
+	static JsonStream writeStream3(long bits, JsonStream stream, List<Byte> arrayByte, Long longdigit)
+			throws IOException {
+
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
 		byte b10 = intero.toString().getBytes()[0];
@@ -253,7 +266,8 @@ public class Base64FloatSupport {
 		long bit = bits >> OTTO;
 		if (bit == 0) {
 			stream.write(arrayByte.get(0), b10, b9, arrayByte.get(8), arrayByte.get(7), arrayByte.get(6));
-			stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
+			stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1),
+					arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> OTTO;
@@ -264,17 +278,18 @@ public class Base64FloatSupport {
 		bit = bit >> OTTO;
 		if (bit == 0) {
 			stream.write(arrayByte.get(0), b12, b11, b10, b9, arrayByte.get(8));
-			stream.write(arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2));
+			stream.write(arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4), arrayByte.get(3),
+					arrayByte.get(2));
 			stream.write(arrayByte.get(1), arrayByte.get(0));
 		}
 		JsonStream strea = writeStream4(bit, stream, arrayByte, longdigit);
 		return strea;
-		
+
 	}
 
-	static JsonStream writeStream2(long bits, JsonStream stream, List<Byte> arrayByte, 
-			Long longdigit) throws IOException {
-		
+	static JsonStream writeStream2(long bits, JsonStream stream, List<Byte> arrayByte, Long longdigit)
+			throws IOException {
+
 		int digit = DIGITS[longdigit.intValue()];
 		Integer intero = digit >> OTTO;
 		byte b6 = intero.toString().getBytes()[0];
@@ -301,9 +316,9 @@ public class Base64FloatSupport {
 		return strea;
 	}
 
-	static JsonStream writeStream1(long bits, JsonStream stream, List<Byte> arrayByte,
-			Long longdigit) throws IOException {
-		
+	static JsonStream writeStream1(long bits, JsonStream stream, List<Byte> arrayByte, Long longdigit)
+			throws IOException {
+
 		long bit = bits >> OTTO;
 		if (bit == 0) {
 			stream.write(arrayByte.get(0), arrayByte.get(1), arrayByte.get(2), arrayByte.get(0));
@@ -337,7 +352,7 @@ public class Base64FloatSupport {
 		arrayByte.add(ch);
 		arrayByte.add(b1);
 		arrayByte.add(b2);
-		
+
 		return writeStream1(bits, stream, arrayByte, longdigit);
 	}
 }
