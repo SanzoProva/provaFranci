@@ -31,17 +31,21 @@ class Codegen {
 
 	static Decoder getDecoder(String cacheKey, Type type) {
 		Decoder decoder = JsoniterSpi.getDecoder(cacheKey);
+		Decoder dec = null;
 		if (decoder != null) {
-			return decoder;
+			dec = decoder;
+		}else {
+			dec = gen(cacheKey, type);
 		}
-		return gen(cacheKey, type);
+		return dec;
 	}
 
 	private static Decoder genNull(Decoder decoder) {
+		Decoder dec = null;
 		if (decoder != null) {
-			return decoder;
+			dec = decoder;
 		}
-		return decoder;
+		return dec;
 	}
 
 	private static String genSupport(String cacheKey, DecodingMode mode, ClassInfo classInfo) {
@@ -59,7 +63,6 @@ class Codegen {
 		Decoder dec = decoder;
 		if (mode == DecodingMode.REFLECTION_MODE) {
 			dec = ReflectionDecoderFactory.create(classInfo);
-			return dec;
 		}
 		return dec;
 	}
@@ -71,7 +74,6 @@ class Codegen {
 				if (Class.forName(cacheKey).newInstance() instanceof Decoder) {
 					dec = (Decoder) Class.forName(cacheKey).newInstance();
 				}
-				return dec;
 			} catch (Exception e) {
 				if (mode == DecodingMode.STATIC_MODE) {
 					throw new JsonException(
@@ -127,7 +129,6 @@ class Codegen {
 				decoder = extension.createDecoder(cacheKey, typ);
 				if (decoder != null) {
 					JsoniterSpi.addNewDecoder(cacheKey, decoder);
-					return decoder;
 				}
 			}
 			ClassInfo classInfo = new ClassInfo(typ);
@@ -199,7 +200,6 @@ class Codegen {
 			}
 			DefaultMapKeyDecoder.registerOrGetExisting(keyType);
 			t = GenericsHelper.createParameterizedType(new Type[] { keyType, valueType }, null, clazz);
-			return t;
 		}
 		return t;
 	}
@@ -221,7 +221,6 @@ class Codegen {
 				clazz = implClazz == null ? HashSet.class : implClazz;
 			}
 			t = GenericsHelper.createParameterizedType(new Type[] { compType }, null, clazz);
-			return t;
 		}
 
 		return t;
@@ -237,7 +236,7 @@ class Codegen {
 				typeArgs = pType.getActualTypeArguments();
 			}
 		} else if (type instanceof WildcardType) {
-			return Object.class;
+			type = Object.class;
 		} else {
 			if (type instanceof Class) {
 				clazz = (Class) type;
@@ -256,10 +255,9 @@ class Codegen {
 		Type type = null;
 		if (implClazz != null) {
 			if (typeArgs.length == 0) {
-				return implClazz;
+				type = implClazz;
 			} else {
 				type = GenericsHelper.createParameterizedType(typeArgs, null, implClazz);
-				return type;
 			}
 		}
 
@@ -309,44 +307,48 @@ class Codegen {
 	}
 
 	private static String genSource(DecodingMode mode, ClassInfo classInfo) {
+		String stringaRitorno = null;
 		if (classInfo.clazz.isArray()) {
-			return CodegenImplArray.genArray(classInfo);
+			stringaRitorno = CodegenImplArray.genArray(classInfo);
 		}
 		if (Map.class.isAssignableFrom(classInfo.clazz)) {
-			return CodegenImplMap.genMap(classInfo);
+			stringaRitorno = CodegenImplMap.genMap(classInfo);
 		}
 		if (Collection.class.isAssignableFrom(classInfo.clazz)) {
-			return CodegenImplArray.genCollection(classInfo);
+			stringaRitorno = CodegenImplArray.genCollection(classInfo);
 		}
 		if (classInfo.clazz.isEnum()) {
-			return CodegenImplEnum.genEnum(classInfo);
+			stringaRitorno = CodegenImplEnum.genEnum(classInfo);
 		}
 		ClassDescriptor desc = ClassDescriptor.getDecodingClassDescriptor(classInfo, false);
 		if (shouldUseStrictMode(mode, desc)) {
-			return CodegenImplObjectStrict.genObjectUsingStrict(desc);
+			stringaRitorno = CodegenImplObjectStrict.genObjectUsingStrict(desc);
 		} else {
-			return CodegenImplObjectHash.genObjectUsingHash(desc);
+			stringaRitorno = CodegenImplObjectHash.genObjectUsingHash(desc);
 		}
+		
+		return stringaRitorno;
 	}
 
 	private static boolean shouldUseStrictMode(DecodingMode mode, ClassDescriptor desc) {
+		boolean supp = false;
 		if (mode == DecodingMode.DYNAMIC_MODE_AND_MATCH_FIELD_STRICTLY) {
-			return true;
+			supp = true;
 		}
 		List<Binding> allBindings = desc.allDecoderBindings();
 		for (Binding binding : allBindings) {
 			if (binding.asMissingWhenNotPresent || binding.asExtraWhenPresent || binding.shouldSkip) {
-				return true;
+				supp = true;
 			}
 		}
 		if (desc.asExtraForUnknownProperties) {
-			return true;
+			supp = true;
 		}
 		if (!desc.keyValueTypeWrappers.isEmpty()) {
-			return true;
+			supp = true;
 		}
-
-		return shouldUseStrictModeSupp(allBindings);
+		supp =shouldUseStrictModeSupp(allBindings);
+		return supp;
 	}
 
 	private static boolean shouldUseStrictModeSupp(List<Binding> allBindings) {
@@ -357,7 +359,7 @@ class Codegen {
 			}
 		}
 		if (!hasBinding) {
-			return true;
+			hasBinding =  true;
 		}
 		return hasBinding;
 	}
