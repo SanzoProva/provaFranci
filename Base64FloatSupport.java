@@ -209,7 +209,6 @@ public class Base64FloatSupport {
 	
 	static JsonStream writeStream4(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
 			Long longdigit) throws IOException {
-		int i=0;
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
 		byte b14 = intero.toString().getBytes()[0];
@@ -218,9 +217,9 @@ public class Base64FloatSupport {
 		arrayByte.add(b14);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b14, b13, arrayByte.get(i+12), arrayByte.get(i+11), arrayByte.get(i+10));
-			stream.write(arrayByte.get(i+9), arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6), arrayByte.get(i+5), arrayByte.get(i+4));
-			stream.write(arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b14, b13, arrayByte.get(12), arrayByte.get(11), arrayByte.get(10));
+			stream.write(arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4));
+			stream.write(arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
@@ -228,16 +227,16 @@ public class Base64FloatSupport {
 		byte b15 = Integer.valueOf(digit).byteValue();
 		arrayByte.add(b15);
 		arrayByte.add(b16);
-		stream.write(arrayByte.get(i), b16, b15, b14, b13, arrayByte.get(i+12));
-		stream.write(arrayByte.get(i+11), arrayByte.get(i+10), arrayByte.get(i+9), arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6));
-		stream.write(arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+		stream.write(arrayByte.get(0), b16, b15, b14, b13, arrayByte.get(12));
+		stream.write(arrayByte.get(11), arrayByte.get(10), arrayByte.get(9), arrayByte.get(8), arrayByte.get(7), arrayByte.get(6));
+		stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		
 		return stream;
 	}
 	
 	static JsonStream writeStream3(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
 			Long longdigit) throws IOException {
-		int i=0;
+		
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
 		byte b10 = intero.toString().getBytes()[0];
@@ -246,8 +245,8 @@ public class Base64FloatSupport {
 		arrayByte.add(b10);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b10, b9, arrayByte.get(i+8), arrayByte.get(i+7), arrayByte.get(i+6));
-			stream.write(arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b10, b9, arrayByte.get(8), arrayByte.get(7), arrayByte.get(6));
+			stream.write(arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
@@ -257,9 +256,9 @@ public class Base64FloatSupport {
 		arrayByte.add(b12);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b12, b11, b10, b9, arrayByte.get(i+8));
-			stream.write(arrayByte.get(i+7), arrayByte.get(i+6), arrayByte.get(i+5), arrayByte.get(i+4), arrayByte.get(i+3), arrayByte.get(i+2));
-			stream.write(arrayByte.get(i+1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b12, b11, b10, b9, arrayByte.get(8));
+			stream.write(arrayByte.get(7), arrayByte.get(6), arrayByte.get(5), arrayByte.get(4), arrayByte.get(3), arrayByte.get(2));
+			stream.write(arrayByte.get(1), arrayByte.get(0));
 		}
 		stream = writeStream4(bits, stream, arrayByte, intero, digit, longdigit);
 		return stream;
@@ -268,7 +267,7 @@ public class Base64FloatSupport {
 
 	static JsonStream writeStream2(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
 			Long longdigit) throws IOException {
-		int i=0;
+		
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
 		byte b6 = intero.toString().getBytes()[0];
@@ -277,8 +276,8 @@ public class Base64FloatSupport {
 		arrayByte.add(b6);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b6, b5, arrayByte.get(i+4), arrayByte.get(i+3));
-			stream.write(arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b6, b5, arrayByte.get(4), arrayByte.get(3));
+			stream.write(arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
@@ -288,8 +287,8 @@ public class Base64FloatSupport {
 		arrayByte.add(b8);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b8, b7, b6, b5, arrayByte.get(i+4));
-			stream.write(arrayByte.get(i+3), arrayByte.get(i+2), arrayByte.get(i+1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b8, b7, b6, b5, arrayByte.get(4));
+			stream.write(arrayByte.get(3), arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		stream = writeStream3(bits, stream, arrayByte, intero, digit, longdigit);
 		return stream;
@@ -297,10 +296,10 @@ public class Base64FloatSupport {
 
 	static JsonStream writeStream1(long bits, JsonStream stream, ArrayList<Byte> arrayByte, Integer intero, int digit,
 			Long longdigit) throws IOException {
-		int i = 0;
+		
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), arrayByte.get(i + 1), arrayByte.get(i + 2), arrayByte.get(i));
+			stream.write(arrayByte.get(0), arrayByte.get(1), arrayByte.get(2), arrayByte.get(0));
 		}
 		digit = DIGITS[longdigit.intValue()];
 		intero = digit >> 8;
@@ -310,7 +309,7 @@ public class Base64FloatSupport {
 		arrayByte.add(b3);
 		bits = bits >> 8;
 		if (bits == 0) {
-			stream.write(arrayByte.get(i), b4, b3, arrayByte.get(i + 2), arrayByte.get(i + 1), arrayByte.get(i));
+			stream.write(arrayByte.get(0), b4, b3, arrayByte.get(2), arrayByte.get(1), arrayByte.get(0));
 		}
 		stream = writeStream2(bits, stream, arrayByte, intero, digit, longdigit);
 		return stream;
