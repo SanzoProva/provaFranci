@@ -107,12 +107,12 @@ class CodegenImplNative {
 		{
 			put(float.class, new Decoder() {
 				@Override
-				public Object decode(JsonIterator iter) throws IOException {
+				public Object decode(JsonIterator utero) throws IOException {
 					Float f = null;
-					if (iter.readNull()) {
+					if (utero.readNull()) {
 						f = null;
 					} else {
-						f = iter.readFloat();
+						f = utero.readFloat();
 					}
 					return f == null ? null : f.floatValue();
 				}
