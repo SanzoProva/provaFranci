@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.jsoniter.spi.Binding;
 import com.jsoniter.spi.ClassDescriptor;
 import com.jsoniter.spi.ClassInfo;
